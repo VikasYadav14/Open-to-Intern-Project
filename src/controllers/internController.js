@@ -16,31 +16,37 @@ const createInterns = async function (req, res) {
         if (isValid(name) == false) {
             return res.status(400).send({ status: false, message: "name is required" });
         }
+        name = name.trim()
         if (isValidName.test(name) == false) {
             return res.status(400).send({ status: false, message: "Only alphabets are allowed in name" })
         }
         obj.name = name
 
-        if (mobile) {
-            if (!isValidMobile.test(mobile)) return res.status(400).send({ status: false, message: "Please Enter 10 digit Mobile Number" })
-            const checkMobile = await internModel.findOne({ mobile: mobile })
-            if (checkMobile) return res.status(400).send({ status: false, message: "Mobile Number already present please use another mobile number" })
-            obj.mobile = mobile
-        } else {
-            return res.status(400).send({ status: false, message: "mobile number must be present" })
+        if (isValid(mobile) == false) {
+            return res.status(400).send({ status: false, message: "mobile number must be present" });
         }
-        
-        if (email) {
-            if (!isValidEmail.test(email)) return res.status(400).send({ status: false, message: "Please Enter Valid Email ID" })
-            const checkEmail = await internModel.findOne({ email: email })
-            if (checkEmail) return res.status(400).send({ status: false, message: "Email ID already present please use another email Id" })
-            obj.email = email
-        } else {
-            return res.status(400).send({ status: false, message: "email must be present" })
+        mobile = mobile.trim()
+        if (!isValidMobile.test(mobile)) {
+            return res.status(400).send({ status: false, message: "Please Enter 10 digit Mobile Number" })
         }
+        const checkMobile = await internModel.findOne({ mobile: mobile })
+        if (checkMobile) return res.status(400).send({ status: false, message: "Mobile Number already present please use another mobile number" })
+        obj.mobile = mobile
         
-
-        if (!collegeName) return res.status(400).send({ status: false, message: "Please Enter college name" })
+        if (isValid(email) == false) {
+            return res.status(400).send({ status: false, message: "email must be present" });
+        }
+        email = email.trim()
+        if (!isValidEmail.test(email)) {
+            return res.status(400).send({ status: false, message: "Please Enter Valid Email ID" })
+        }
+        const checkEmail = await internModel.findOne({ email: email })
+        if (checkEmail) return res.status(400).send({ status: false, message: "Email ID already present please use another email Id" })
+        obj.email = email
+        
+        if (isValid(collegeName) == false) {
+            return res.status(400).send({ status: false, message: "Please Enter college name" });
+        }
         collegeName = collegeName.toLowerCase().trim();
 
         const takeCollegeId = await collegeModel.findOne({ name: collegeName }).select({_id:1});

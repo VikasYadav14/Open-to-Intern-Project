@@ -50,13 +50,13 @@ const getCollegeDetails = async function (req, res) {
     try {
         const obj = {}
         let collegeName = req.query.collegeName
-        if (!collegeName) return res.status(400).send({ status: false, message: "Please enter college Name in Abbreviation" })
+        if (isValid(collegeName)==false) return res.status(400).send({ status: false, message: "Please enter college Name in Abbreviation" })
+        collegeName = collegeName.toLowerCase().trim()
 
-        collegeName = collegeName.toLowerCase()
         const collegeID = await collegeModel.findOne({ name: collegeName }).select({ _id: 1 })
         if (!collegeID) return res.status(404).send({ status: false, message: "College Not Found" })
 
-        let internData = await internModel.find({ collegeId: collegeID }).select({ _id: 1, name: 1, email: 1, mobile: 1 })
+        let internData = await internModel.find({ collegeId: collegeID, isDeleted: false }).select({ _id: 1, name: 1, email: 1, mobile: 1 })
         if(internData.length==0){
             internData = "There is no such intern in this college"
         }
